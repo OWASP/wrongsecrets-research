@@ -3,23 +3,28 @@ import json
 import os
 import subprocess
 
-
 # Define the API endpoint and parameters
 api_url = "https://api.github.com/search/repositories"
 params = {
     "q": "stars:>10000", # Search for repositories with more than 0 stars
     "sort": "stars", # Sort the results by stars
-    "per_page": 1, # Get 100 results per page
-    "page": 1 # Get the first page
+    "per_page": 100 # Get 100 results per page
 }
 
-# Make the API request and get the JSON response
-response = requests.get(api_url, params=params)
-data = response.json()
-# print(data)
+# Initialize an empty list to store the results
+repos = []
+
+# Loop over the page numbers from 1 to 10
+for page in range(1, 11):
+    # Update the page parameter in the params dictionary
+    params["page"] = page
+    # Make the API request and get the JSON response
+    response = requests.get(api_url, params=params)
+    data = response.json()
+    # Append the items array from the response to the repos list
+    repos.extend(data["items"])
 
 # Extract the relevant information from the response
-repos = data["items"] # Get the array of repository objects
 repo_names = [repo["name"] for repo in repos] # Get the names of the repositories
 repo_urls = [repo["clone_url"] for repo in repos] # Get the urls of the repositories
 
