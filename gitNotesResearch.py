@@ -15,7 +15,7 @@ params = {
 repos = []
 
 # Loop over the page numbers from 1 to 10
-for page in range(1, 11):
+for page in range(1, 9):
     # Update the page parameter in the params dictionary
     params["page"] = page
     # Make the API request and get the JSON response
@@ -38,7 +38,10 @@ try:
 except:
     print("The directory already exists")
 
-noteCount = 0
+totalNoteCount = 0
+totalRepoCount = 0
+repoWithNotes = 0
+
 # Loop through the repository urls and clone them into the folder
 for index, url in enumerate(repo_urls):
     # Clone the repository into the subfolder
@@ -54,6 +57,11 @@ for index, url in enumerate(repo_urls):
     # Count the number of lines in the output and print it
     count = len(output) - 1
     print(f"There are {count} notes in the {repo_names[index]} repository.")
-    noteCount += count
+    if count != 0:
+        repoWithNotes += 1
+    totalNoteCount += count
+    totalRepoCount += 1
 
-print(f"There was {noteCount} total notes")
+print(f"There was {totalNoteCount} total notes")
+print(f"There was {totalRepoCount} total repo's")
+print(f"There was {repoWithNotes} repo's with notes")
