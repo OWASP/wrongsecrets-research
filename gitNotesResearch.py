@@ -1,67 +1,103 @@
 import requests
-import json
 import os
 import subprocess
+import duckdb
+from ulid import ULID
 
-# Define the API endpoint and parameters
-api_url = "https://api.github.com/search/repositories"
-params = {
-    "q": "stars:>10000", # Search for repositories with more than 0 stars
-    "sort": "stars", # Sort the results by stars
-    "per_page": 100 # Get 100 results per page
-}
 
-# Initialize an empty list to store the results
-repos = []
+def create_db_and_table(db_name, table_name):
+    conn = duckdb.connect(db_name, read_only=False)
+    conn.execute(
+        f"""CREATE TABLE IF NOT EXISTS {table_name}
+            (
+                        id string NOT NULL,
+                        name            varchar(255) NOT NULL,
+                        license         string NOT NULL,
+                        stars           int NOT NULL,
+                        has_notes       bool NULL,
+                        notes_count     int NULL
+                        repo_created_at datetime NOT NULL,
+                        repo_updated_at datetime NOT NULL,
+                        created_at      datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        updated_at      datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (id)
+            )"""
+    )
+    return conn
 
-# Loop over the page numbers from 1 to 10
-for page in range(1, 9):
-    # Update the page parameter in the params dictionary
-    params["page"] = page
-    # Make the API request and get the JSON response
-    response = requests.get(api_url, params=params)
-    data = response.json()
-    # Append the items array from the response to the repos list
-    repos.extend(data["items"])
 
-# Extract the relevant information from the response
-repo_names = [repo["name"] for repo in repos] # Get the names of the repositories
-repo_urls = [repo["clone_url"] for repo in repos] # Get the urls of the repositories
+def getRepos():
+    repos = []
+    api_url = "https://api.github.com/search/repositories"
+    params = {"q": "stars:>10000", "sort": "stars", "per_page": 5}
+    for page in range(1, 2):
+        params["page"] = page
+        response = requests.get(api_url, params=params)
+        data = response.json()
+        repos.extend(data["items"])
+    return repos
 
-# Print the names and urls of the top 100 repositories by stars
-for name, url in zip(repo_names, repo_urls):
-    print(name, url)
 
-# Create a folder called "repositories" next to the script
-try:
-    os.mkdir("repositories")
-except:
-    print("The directory already exists")
+def saveGeneralRepoDetailsToDB(repo, conn):
+    conn.sql(
+        f"""
+            INSERT INTO repos
+                (id,
+                NAME,
+                license,
+                stars,
+                repo_created_at,
+                repo_updated_at)
+            VALUES     
+                ('{ulid.generate()}',
+                '{repo["name"]}',
+                '{repo["license"]["key"]}',
+                '{repo["stargazers_count"]}',
+                '{repo["created_at"]}',
+                '{repo["updated_at"]}') 
+        """
+    )
 
-totalNoteCount = 0
-totalRepoCount = 0
-repoWithNotes = 0
+def cloneAndPullNotes(repo):
+    subprocess.run(["git", "clone", repo["clone_url"]])
+    pullGitNotes(repo)
 
-# Loop through the repository urls and clone them into the folder
-for index, url in enumerate(repo_urls):
-    # Clone the repository into the subfolder
-    subprocess.run(["git", "clone", url])
-    # Create a Repo object for the repository
-    subprocess.run(["git", "fetch", "origin", "refs/notes/*:refs/notes/*"], cwd=repo_names[index])
-    # List all the git notes using git notes list command
-    output = subprocess.check_output(["git", "notes", "list"], cwd=repo_names[index])
+def pullGitNotes(repo):
+    print(repo["name"])
+    subprocess.run(["git", "fetch", "origin", "refs/notes/*:refs/notes/*"], cwd=repo["name"])
 
-    # Convert the output from bytes to string and split it by newline characters
-    output = output.decode("utf-8").split("\n")
+def saveNotesRepoDetailsToDB(repo):
+    gitNotesCount = subprocess.run("git notes list | wc -l", shell=True, stdout=subprocess.PIPE)
+    gitNotesCount = gitNotesCount.stdout.decode().strip()
+    gitNotesCount = int(gitNotesCount)
+    if gitNotesCount != 0:
+        conn.sql(
+            f"""
+                UPDATE repos
+                SET 
+                    has_notes = True
+                    notes_count = '{gitNotesCount}
+                WHERE NAME = '{repo["name"]}';
+            """
+        )
+    conn.sql(
+            f"""
+                UPDATE repos
+                SET 
+                    notes_count = '{gitNotesCount}
+                WHERE NAME = '{repo["name"]}';
+            """
+        )
 
-    # Count the number of lines in the output and print it
-    count = len(output) - 1
-    print(f"There are {count} notes in the {repo_names[index]} repository.")
-    if count != 0:
-        repoWithNotes += 1
-    totalNoteCount += count
-    totalRepoCount += 1
+ulid = ULID()
+repos = getRepos()
+conn = create_db_and_table("gitNotesResearch.db", "repos")
+for repo in repos:
+    saveGeneralRepoDetailsToDB(repo, conn)
+    cloneAndPullNotes(repo)
+    saveNotesRepoDetailsToDB(repo)
+# cloneAndPullNotes(repos)
+# saveNotesRepoDetailsToDB()
 
-print(f"There was {totalNoteCount} total notes")
-print(f"There was {totalRepoCount} total repo's")
-print(f"There was {repoWithNotes} repo's with notes")
+
+# conn = duckdb.connect('gitNotesResearch.db', read_only=False)
