@@ -37,7 +37,7 @@ def get_note_content(note_ref, repo):
     return result.stdout
 
 
-def get_note_created_date(note_id):
+def get_note_created_date(note_id, repo):
     result = subprocess.run(
         ["git", "log", "-1", "--date=format-local:%Y-%m-%d %H:%M:%S", "--pretty=format:\"%cd\"", note_id],
         capture_output=True,
@@ -49,7 +49,7 @@ def get_note_created_date(note_id):
     return result_with_ms
 
 
-def get_note_author(note_id):
+def get_note_author(note_id, repo):
     result = subprocess.run(
         ["git", "show", "-q", note_id],
         capture_output=True,
