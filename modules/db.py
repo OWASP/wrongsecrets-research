@@ -39,18 +39,24 @@ def get_repo_id(repo, conn):
 def save_notes_details_to_notes_table(repo_id, note_id, conn, repo):
     note_content = git.get_note_content(note_id, repo)
     note_created_date = git.get_note_created_date(note_id)
+    note_author = git.get_note_author(note_id)
     conn.sql(
         f"""
             INSERT INTO notes
                 (id,
                 repo_id,
                 content,
-                note_ref)
+                note_ref,
+                author,
+                note_created_at
+                )
             VALUES     
                 ('{ulid.generate()}',
                 '{repo_id[0]}',
                 '{note_content.replace("'", "''")}',
-                '{note_id}') 
+                '{note_id}',
+                '{note_author}',
+                '{note_created_date}')
         """
     ) 
 

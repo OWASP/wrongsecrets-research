@@ -4,7 +4,7 @@
         {
             "previewLimit": 50,
             "driver": "DuckDB",
-            "database": "${workspaceFolder:git-notes-research}/gitNotesResearch.db",
+            "database": "${workspaceFolder:git-notes-research}/git_notes_research.db",
             "name": "gitNotesResearch"
         }
     ],
