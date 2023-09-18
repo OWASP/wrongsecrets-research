@@ -19,4 +19,5 @@ for repo in repos:
         db.update_repo_notes_bool(True, repo_id, conn)
     else:
         db.update_repo_notes_bool(False, repo_id, conn)
+    setup.delete_repo(repo)
 

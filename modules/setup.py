@@ -68,6 +68,10 @@ def clone_and_pull_notes(repo):
     pull_git_notes(repo)
 
 
+def delete_repo(repo):
+    subprocess.run(["rm", "-rf", repo["name"]], cwd="repositories/")
+
+
 def pull_git_notes(repo):
     subprocess.run(
         ["git", "fetch", "origin", "refs/notes/*:refs/notes/*"], cwd="repositories/" + repo["name"]
