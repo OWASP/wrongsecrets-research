@@ -5,24 +5,42 @@ ulid = ULID()
 
 
 def save_repo_details_to_repo_table(repo, conn):
-    conn.sql(
-        f"""
-            INSERT INTO repos
-                (id,
-                NAME,
-                license,
-                stars,
-                repo_created_at,
-                repo_updated_at)
-            VALUES     
-                ('{ulid.generate()}',
-                '{repo["name"]}',
-                '{repo["license"]["key"]}',
-                '{repo["stargazers_count"]}',
-                '{repo["created_at"]}',
-                '{repo["updated_at"]}') 
-        """
-    )
+    if repo.get("license", None) and repo["license"].get("key", None):
+        conn.sql(
+            f"""
+                INSERT INTO repos
+                    (id,
+                    NAME,
+                    license,
+                    stars,
+                    repo_created_at,
+                    repo_updated_at)
+                VALUES     
+                    ('{ulid.generate()}',
+                    '{repo["name"]}',
+                    '{repo["license"]["key"]}',
+                    '{repo["stargazers_count"]}',
+                    '{repo["created_at"]}',
+                    '{repo["updated_at"]}') 
+            """
+        )
+    else:
+        conn.sql(
+            f"""
+                INSERT INTO repos
+                    (id,
+                    NAME,
+                    stars,
+                    repo_created_at,
+                    repo_updated_at)
+                VALUES     
+                    ('{ulid.generate()}',
+                    '{repo["name"]}',
+                    '{repo["stargazers_count"]}',
+                    '{repo["created_at"]}',
+                    '{repo["updated_at"]}') 
+            """
+        )
 
 
 def get_repo_id(repo, conn):

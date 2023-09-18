@@ -22,7 +22,7 @@ def create_db_and_tables(db_name):
             (
                         id              string NOT NULL,
                         name            varchar(255) NOT NULL,
-                        license         string NOT NULL,
+                        license         string NULL,
                         stars           int NOT NULL,
                         has_notes       bool NULL,
                         notes_count     int NULL,
