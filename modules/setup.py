@@ -20,16 +20,17 @@ def create_db_and_tables(db_name):
     conn.execute(
         f"""CREATE TABLE IF NOT EXISTS repos
             (
-                        id              string NOT NULL,
-                        name            varchar(255) NOT NULL,
-                        license         string NULL,
-                        stars           int NOT NULL,
-                        has_notes       bool NULL,
-                        notes_count     int NULL,
-                        repo_created_at TIMESTAMP NOT NULL,
-                        repo_updated_at TIMESTAMP NOT NULL,
-                        created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                        updated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        id                 string NOT NULL,
+                        name               varchar(255) NOT NULL,
+                        license            string NULL,
+                        stars              int NOT NULL,
+                        has_notes          bool NULL,
+                        notes_count        int NULL,
+                        total_contributors int NOT NULL,
+                        repo_created_at    TIMESTAMP NOT NULL,
+                        repo_updated_at    TIMESTAMP NOT NULL,
+                        created_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        updated_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         PRIMARY KEY (id)
             )"""
     )
@@ -74,5 +75,6 @@ def delete_repo(repo):
 
 def pull_git_notes(repo):
     subprocess.run(
-        ["git", "fetch", "origin", "refs/notes/*:refs/notes/*"], cwd="repositories/" + repo["name"]
+        ["git", "fetch", "origin", "refs/notes/*:refs/notes/*"],
+        cwd="repositories/" + repo["name"],
     )
