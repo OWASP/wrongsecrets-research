@@ -26,7 +26,7 @@ def create_db_and_tables(db_name):
                         stars              int NOT NULL,
                         has_notes          bool NULL,
                         notes_count        int NULL,
-                        total_contributors int NOT NULL,
+                        total_contributors int,
                         repo_created_at    TIMESTAMP NOT NULL,
                         repo_updated_at    TIMESTAMP NOT NULL,
                         created_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

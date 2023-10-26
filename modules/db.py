@@ -1,3 +1,4 @@
+import time
 from ulid import ULID
 import modules.git as git
 import requests
@@ -6,7 +7,13 @@ ulid = ULID()
 
 
 def save_repo_details_to_repo_table(repo, conn):
-    contributors = get_contributor_count(repo["contributors_url"])
+    for i in range(3):
+        contributors = get_contributor_count(repo["contributors_url"])
+        if contributors is not None:
+            break
+        else:
+            print(f"No contributors could be found for {repo['name']}: Null has been added to the DB")
+            continue
     if repo.get("license", None) and repo["license"].get("key", None):
         conn.sql(
             f"""
@@ -71,10 +78,10 @@ def get_contributor_count(contributors_url):
                 return len(contributors)
             contributors.extend(page_contributors)
             page += 1
+            time.sleep(0.02)
         else:
             print(f"Failed to fetch contributors. Status code: {response.status_code}")
             break
-
 
 def save_notes_details_to_notes_table(repo_id, note_id, conn, repo):
     note_content = git.get_note_content(note_id, repo)
