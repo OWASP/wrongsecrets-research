@@ -2,12 +2,14 @@ import modules.setup as setup
 import modules.git as git
 import modules.db as db
 
+token = "__ADD YOUR PAT HERE__"
+
 setup.delete_old_db_file("git_notes_research.db")
-repos = setup.get_repos()
+repos = setup.get_repos(token)
 conn = setup.create_db_and_tables("git_notes_research.db")
 for repo in repos:
     try:
-        db.save_repo_details_to_repo_table(repo, conn)
+        db.save_repo_details_to_repo_table(repo, conn, token)
         setup.clone_and_pull_notes(repo)
         repo_id = db.get_repo_id(repo, conn)
         if (

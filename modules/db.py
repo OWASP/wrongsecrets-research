@@ -6,9 +6,9 @@ import requests
 ulid = ULID()
 
 
-def save_repo_details_to_repo_table(repo, conn):
+def save_repo_details_to_repo_table(repo, conn, token):
     for i in range(3):
-        contributors = get_contributor_count(repo["contributors_url"])
+        contributors = get_contributor_count(repo["contributors_url"], token)
         if contributors is not None:
             break
         else:
@@ -63,10 +63,9 @@ def get_repo_id(repo, conn):
     return id.fetchone()
 
 
-def get_contributor_count(contributors_url):
+def get_contributor_count(contributors_url, token):
     contributors = []
     page = 1
-    token = "__ADD YOUR PAT HERE__"
     headers = {"Authorization": f"Bearer {token}"}
     while True:
         response = requests.get(

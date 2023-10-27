@@ -52,13 +52,14 @@ def create_db_and_tables(db_name):
     return conn
 
 
-def get_repos():
+def get_repos(token):
     repos = []
     api_url = "https://api.github.com/search/repositories"
-    params = {"q": "stars:>10000", "sort": "stars", "per_page": 100}
-    for page in range(1, 2):
+    params = {"q": "stars:>1000", "sort": "stars", "per_page": 100}
+    headers = {"Authorization": f"Bearer {token}"}
+    for page in range(1, 10):
         params["page"] = page
-        response = requests.get(api_url, params=params)
+        response = requests.get(api_url, params=params, headers=headers)
         data = response.json()
         repos.extend(data["items"])
     return repos
