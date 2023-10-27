@@ -117,8 +117,6 @@ def update_repo_notes_count(repo_id, conn):
             WHERE repo_id = '{repo_id[0]}'
         """
     )
-    if notes_count == None:
-        notes_count = 0
     conn.sql(
         f"""
             UPDATE repos
