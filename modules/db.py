@@ -112,11 +112,13 @@ def save_notes_details_to_notes_table(repo_id, note_id, conn, repo):
 def update_repo_notes_count(repo_id, conn):
     notes_count = conn.sql(
         f"""
-                                SELECT COUNT(*) 
-                                FROM notes
-                                WHERE repo_id = '{repo_id[0]}'
-                            """
+            SELECT COUNT(*) 
+            FROM notes
+            WHERE repo_id = '{repo_id[0]}'
+        """
     )
+    if notes_count == None:
+        notes_count = 0
     conn.sql(
         f"""
             UPDATE repos
