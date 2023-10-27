@@ -12,7 +12,7 @@ def save_repo_details_to_repo_table(repo, conn):
         if contributors is not None:
             break
         else:
-            print(f"No contributors could be found for {repo['name']}: Null has been added to the DB")
+            print(f"No contributors could be found for {repo['name']}: Retrying {i + 1}")
             continue
     if repo.get("license", None) and repo["license"].get("key", None):
         conn.sql(
@@ -29,8 +29,8 @@ def save_repo_details_to_repo_table(repo, conn):
                     ('{ulid.generate()}',
                     '{repo["name"]}',
                     '{repo["license"]["key"]}',
-                    '{repo["stargazers_count"]}',
-                    '{contributors}',
+                    {repo["stargazers_count"]},
+                    {contributors},
                     '{repo["created_at"]}',
                     '{repo["updated_at"]}') 
             """
@@ -42,16 +42,20 @@ def save_repo_details_to_repo_table(repo, conn):
                     (id,
                     NAME,
                     stars,
+                    total_contributors,
                     repo_created_at,
                     repo_updated_at)
                 VALUES     
                     ('{ulid.generate()}',
                     '{repo["name"]}',
                     '{repo["stargazers_count"]}',
+                    '{contributors}',
                     '{repo["created_at"]}',
                     '{repo["updated_at"]}') 
             """
         )
+    conn.commit()
+
 
 
 def get_repo_id(repo, conn):
@@ -78,7 +82,7 @@ def get_contributor_count(contributors_url):
                 return len(contributors)
             contributors.extend(page_contributors)
             page += 1
-            time.sleep(0.02)
+            time.sleep(0.5)
         else:
             print(f"Failed to fetch contributors. Status code: {response.status_code}")
             break
