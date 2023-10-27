@@ -17,7 +17,7 @@ def save_repo_details_to_repo_table(repo, conn):
             )
             continue
     if repo.get("license", None) and repo["license"].get("key", None):
-        conn.sql(
+        conn.execute(
             """
     INSERT INTO repos
     (id, NAME, license, stars, total_contributors, repo_created_at, repo_updated_at)
@@ -34,11 +34,11 @@ def save_repo_details_to_repo_table(repo, conn):
             ),
         )
     else:
-        conn.sql(
+        conn.execute(
             """
     INSERT INTO repos
     (id, NAME, stars, total_contributors, repo_created_at, repo_updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?)
     """,
             (
                 ulid.generate(),

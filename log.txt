@@ -1,0 +1,9 @@
+Database file 'git_notes_research.db' has been deleted.
+An error occurred with developer-roadmap: [Errno 2] No such file or directory: 'repositories/developer-roadmap'
+Failed to fetch contributors. Status code: 403
+No contributors could be found for linux: Retrying 1
+Failed to fetch contributors. Status code: 403
+No contributors could be found for linux: Retrying 2
+Failed to fetch contributors. Status code: 403
+No contributors could be found for linux: Retrying 3
+An error occurred with linux: Binder Error: Referenced column "None" not found in FROM clause!
