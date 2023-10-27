@@ -12,50 +12,44 @@ def save_repo_details_to_repo_table(repo, conn):
         if contributors is not None:
             break
         else:
-            print(f"No contributors could be found for {repo['name']}: Retrying {i + 1}")
+            print(
+                f"No contributors could be found for {repo['name']}: Retrying {i + 1}"
+            )
             continue
     if repo.get("license", None) and repo["license"].get("key", None):
         conn.sql(
-            f"""
-                INSERT INTO repos
-                    (id,
-                    NAME,
-                    license,
-                    stars,
-                    total_contributors,
-                    repo_created_at,
-                    repo_updated_at)
-                VALUES     
-                    ('{ulid.generate()}',
-                    '{repo["name"]}',
-                    '{repo["license"]["key"]}',
-                    {repo["stargazers_count"]},
-                    {contributors},
-                    '{repo["created_at"]}',
-                    '{repo["updated_at"]}') 
             """
+    INSERT INTO repos
+    (id, NAME, license, stars, total_contributors, repo_created_at, repo_updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    """,
+            (
+                ulid.generate(),
+                repo["name"],
+                repo["license"]["key"],
+                repo["stargazers_count"],
+                contributors,
+                repo["created_at"],
+                repo["updated_at"],
+            ),
         )
     else:
         conn.sql(
-            f"""
-                INSERT INTO repos
-                    (id,
-                    NAME,
-                    stars,
-                    total_contributors,
-                    repo_created_at,
-                    repo_updated_at)
-                VALUES     
-                    ('{ulid.generate()}',
-                    '{repo["name"]}',
-                    '{repo["stargazers_count"]}',
-                    '{contributors}',
-                    '{repo["created_at"]}',
-                    '{repo["updated_at"]}') 
             """
+    INSERT INTO repos
+    (id, NAME, stars, total_contributors, repo_created_at, repo_updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    """,
+            (
+                ulid.generate(),
+                repo["name"],
+                repo["stargazers_count"],
+                contributors,
+                repo["created_at"],
+                repo["updated_at"],
+            ),
         )
     conn.commit()
-
 
 
 def get_repo_id(repo, conn):
@@ -75,7 +69,9 @@ def get_contributor_count(contributors_url):
     token = "__ADD YOUR PAT HERE__"
     headers = {"Authorization": f"Bearer {token}"}
     while True:
-        response = requests.get(f"{contributors_url}?page={page}&per_page=100", headers=headers)
+        response = requests.get(
+            f"{contributors_url}?page={page}&per_page=100", headers=headers
+        )
         if response.status_code == 200:
             page_contributors = response.json()
             if not page_contributors:
@@ -86,6 +82,7 @@ def get_contributor_count(contributors_url):
         else:
             print(f"Failed to fetch contributors. Status code: {response.status_code}")
             break
+
 
 def save_notes_details_to_notes_table(repo_id, note_id, conn, repo):
     note_content = git.get_note_content(note_id, repo)
