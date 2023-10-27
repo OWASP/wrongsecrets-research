@@ -162,3 +162,4 @@ cython_debug/
 repositories/*
 !repositories/.gitkeep
 *.db
+*.log
