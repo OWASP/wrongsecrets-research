@@ -57,7 +57,7 @@ def get_repos(token):
     api_url = "https://api.github.com/search/repositories"
     params = {"q": "stars:>1000", "sort": "stars", "per_page": 100}
     headers = {"Authorization": f"Bearer {token}"}
-    for page in range(1, 10):
+    for page in range(1, 11):
         params["page"] = page
         response = requests.get(api_url, params=params, headers=headers)
         data = response.json()
