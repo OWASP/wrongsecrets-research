@@ -161,5 +161,5 @@ cython_debug/
 
 repositories/*
 !repositories/.gitkeep
-*.db
+/*.db
 *.log
