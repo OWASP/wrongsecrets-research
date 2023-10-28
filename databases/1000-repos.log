@@ -1,0 +1,13 @@
+Database file 'git_notes_research.db' has been deleted.
+Failed to fetch contributors. Status code: 403
+No contributors could be found for linux: Retrying 1
+Failed to fetch contributors. Status code: 403
+No contributors could be found for linux: Retrying 2
+Failed to fetch contributors. Status code: 403
+No contributors could be found for linux: Retrying 3
+An error occurred with spring-framework: Command '['git', 'log', '-1', '--date=format-local:%Y-%m-%d %H:%M:%S', '--pretty=format:"%cd"', '1e87557f8567e5943e2570acf528e89c21e0c78b']' returned non-zero exit status 128.
+An error occurred with cockroach: Parser Error: syntax error at or near "kena"
+LINE 16:                 'Raphael 'kena' Poss <knz@cockroachlabs.com>',
+                                   ^
+An error occurred with rethinkdb: Command '['git', 'log', '-1', '--date=format-local:%Y-%m-%d %H:%M:%S', '--pretty=format:"%cd"', 'fab4af0e1703cb604d7435b52b82371c8cc158d2']' returned non-zero exit status 128.
+An error occurred with rufus: Command '['git', 'log', '-1', '--date=format-local:%Y-%m-%d %H:%M:%S', '--pretty=format:"%cd"', '156e4a7a2b7f65c0a870540550c76f5e67c6dc3a']' returned non-zero exit status 128.
