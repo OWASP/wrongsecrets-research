@@ -1,0 +1,3 @@
+duckdb==0.7.0
+py_ulid==1.0.3
+Requests==2.31.0
